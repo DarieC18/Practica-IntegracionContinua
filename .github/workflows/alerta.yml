@@ -1,0 +1,23 @@
+name: Alerta a ntfy.sh
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enviar notificación a ntfy.sh
+        run: |
+          MSG="✅ Push a main en ${{ github.repository }} por ${{ github.actor }} (commit ${{ github.sha }})."
+          curl \
+            -H "Title: CI - Nuevo push a main" \
+            -H "Priority: 4" \
+            -H "Tags: rocket,computer" \
+            -d "$MSG" \
+            https://ntfy.sh/devops-itla
