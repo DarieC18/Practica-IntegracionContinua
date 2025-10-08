@@ -16,55 +16,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Ejecutar Hola Mundo
-        run: node index.js
-
-      - name: Enviar notificación a ntfy.sh
+      - name: Enviar notificación (ntfy)
         run: |
-          MSG="🚀 Push en main ejecutado correctamente. Hola Mundo listo!"
-          curl \
-            -H "Title: CI - Hola Mundo completado" \
+          MSG="🚀 Push en main por ${{ github.actor }} (commit ${{ github.sha }}) en ${{ github.repository }}"
+          curl -sS \
+            -H "Title: CI - Notificación" \
             -H "Priority: 4" \
             -H "Tags: rocket,computer" \
             -d "$MSG" \
             https://ntfy.sh/devops-itla
-name: Alerta a ntfy.sh (Hola Mundo)
 
-on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - "index.js"
-      - "style.css"
-      - ".github/workflows/alerta.yml"
-  workflow_dispatch:
-
-jobs:
-  notify:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
+      - name: Setup Node (opcional)
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Ejecutar Hola Mundo
-        run: node index.js
-
-      - name: Enviar notificación a ntfy.sh
+      - name: Ejecutar Hola Mundo si existe
         run: |
-          MSG="🚀 Push en main ejecutado correctamente. Hola Mundo listo!"
-          curl \
-            -H "Title: CI - Hola Mundo completado" \
-            -H "Priority: 4" \
-            -H "Tags: rocket,computer" \
-            -d "$MSG" \
-            https://ntfy.sh/devops-itla
+          if [ -f "index.js" ]; then
+            echo "Ejecutando index.js..."
+            node -v
+            node index.js
+          else
+            echo "index.js no existe en la raíz; omitiendo ejecución."
+          fi
